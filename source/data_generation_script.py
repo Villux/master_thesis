@@ -2,8 +2,8 @@ import argparse
 import glob
 import os
 
-from .data_generator import generate_data, split_data
-from .data_loader import load_data
+from data_generator import generate_data, split_data
+from data_loader import load_data
 
 def run(T, dt, M):
     parameters = {
@@ -18,9 +18,9 @@ def run(T, dt, M):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sample-count', type=int, default=25, help="How many samples per parameter combination are created")
-    parser.add_argument('--step-size', type=float, default=(1/(60*6.5))/252, help="Step size (delta t)")
-    parser.add_argument('--period-length', type=float, default=2, help="How many years")
+    parser.add_argument('--sample-count', type=int, default=10, help="How many samples per parameter combination are created")
+    parser.add_argument('--step-size', type=float, default=1/252, help="Step size (delta t)")
+    parser.add_argument('--period-length', type=float, default=1, help="How many years")
     args = parser.parse_args()
 
     try:
@@ -30,9 +30,10 @@ if __name__ == "__main__":
 
         yes = {'yes','y', 'ye', ''}
         choice = input().lower()
+
         if choice in yes:
             for folder in folders:
-                for file in glob.glob(f"data/{folder}/*.p"):
+                for file in glob.glob(f"{folder}*.p"):
                     os.remove(file)
         else:
             print(f"Previous data from folders: {folders} was not removed")
