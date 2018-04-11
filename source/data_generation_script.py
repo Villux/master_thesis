@@ -1,4 +1,6 @@
 import argparse
+import glob
+import os
 
 from .data_generator import generate_data, split_data
 from .data_loader import load_data
@@ -22,6 +24,19 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
+        folders = glob.glob("data/*/")
+
+        print(f"Remove files in data folders: {folders}")
+
+        yes = {'yes','y', 'ye', ''}
+        choice = input().lower()
+        if choice in yes:
+            for folder in folders:
+                for file in glob.glob(f"data/{folder}/*.p"):
+                    os.remove(file)
+        else:
+            print(f"Previous data from folders: {folders} was not removed")
+
         run(args.period_length, args.step_size, args.sample_count)
         print('Process completed')
     except:
