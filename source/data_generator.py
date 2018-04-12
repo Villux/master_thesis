@@ -2,8 +2,22 @@ import pickle
 import glob
 import os
 import numpy as np
+from multiprocessing import Pool
 
 from heston import heston_dynamic_milstein_scheme
+
+class SimulationEnginer(object):
+    def __init__(self, kappa, theta, xi, rho, dt, T):
+        self.kappa = kappa
+        self.theta = theta
+        self.xi = xi
+        self.rho = rho
+        self.dt = dt
+        self.T = T
+    def __call__(self, idx):
+        r, v, _ = generate_sample(self.kappa, self.theta, self.xi, self.rho, self.dt, self.T)
+        filename = f"k{self.kappa}_t{self.theta}_xi{self.xi}_rho{self.rho}__{idx}"
+        store_sample(r, v, filename)
 
 def generate_sample(kappa, theta, xi, rho, dt, T):
     parameters = {
@@ -23,10 +37,9 @@ def generate_data(parameters, number_of_samples=10, dt=0, T=0):
         for _, theta in enumerate(parameters['theta']):
             for _, rho in enumerate(parameters['rho']):
                 for _, xi in enumerate(parameters['xi']):
-                    for idx in range(number_of_samples):
-                        r, v, _ = generate_sample(kappa, theta, xi, rho, dt, T)
-                        filename = f"k{kappa}_t{theta}_xi{xi}_rho{rho}__{idx}"
-                        store_sample(r, v, filename)
+                    engine = SimulationEnginer(kappa, theta, xi, rho, dt, T)
+                    pool = Pool(os.cpu_count())
+                    pool.map(engine, range(number_of_samples))
 
 def move_file_to_folder(old_path, new_path):
     os.rename(old_path, new_path)
