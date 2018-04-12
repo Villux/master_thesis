@@ -35,13 +35,14 @@ def store_sample(returns, variances, filename):
 
 
 def generate_data(parameters, number_of_samples=10, dt=0, T=0):
+    pool = Pool(os.cpu_count())
     for _, kappa in enumerate(parameters['kappa']):
         for _, theta in enumerate(parameters['theta']):
             for _, rho in enumerate(parameters['rho']):
                 for _, xi in enumerate(parameters['xi']):
                     engine = SimulationEnginer(kappa, theta, xi, rho, dt, T)
-                    pool = Pool(os.cpu_count())
                     pool.map(engine, range(number_of_samples))
+    pool.close()
 
 def move_file_to_folder(old_path, new_path):
     os.rename(old_path, new_path)
