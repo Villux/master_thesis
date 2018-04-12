@@ -11,7 +11,7 @@ from data_loader import load_data
 Xtrain, ytrain, Xval, yval, Xtest, ytest, n_classes = load_data()
 
 # Hyper Parameters
-EPOCH = 100
+EPOCH = 40
 BATCH_SIZE = 10
 LR = 0.001
 
@@ -28,12 +28,14 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv1d(2, 16, kernel_size=20, stride=1),
-            nn.ReLU())
+            nn.Conv1d(2, 8, kernel_size=5, stride=1),
+            nn.ReLU(),
+            nn.AvgPool1d(kernel_size=2))
         self.layer2 = nn.Sequential(
-            nn.Conv1d(16, 32, kernel_size=20, stride=1),
-            nn.ReLU())
-        self.fc = nn.Linear(214*32, n_classes)
+            nn.Conv1d(8, 5, kernel_size=5, stride=1),
+            nn.ReLU(),
+            nn.AvgPool1d(kernel_size=2))
+        self.fc = nn.Linear(60*5, n_classes)
 
     def forward(self, x):
         out = self.layer1(x)
@@ -43,7 +45,6 @@ class CNN(nn.Module):
         return out
 
 cnn = CNN()
-
 
 # Loss and Optimizer
 criterion = nn.CrossEntropyLoss()
@@ -63,7 +64,6 @@ for epoch in range(EPOCH):
         optimizer.step()
 
         if (i+1) % 5 == 0:
-            import ipdb; ipdb.set_trace()
             print ('Epoch [%d/%d], Iter [%d/%d] Loss: %.4f'
                    %(epoch+1, EPOCH, i+1, len(Xtrain)//BATCH_SIZE, loss.data[0]))
 
