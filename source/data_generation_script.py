@@ -40,5 +40,6 @@ if __name__ == "__main__":
 
         run(args.period_length, args.step_size, args.sample_count)
         print('Process completed')
-    except:
+    except Exception as e:
         print("Failed to generate data")
+        print(f"Error: {e}")
