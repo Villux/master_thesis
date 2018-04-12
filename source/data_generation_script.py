@@ -23,23 +23,23 @@ if __name__ == "__main__":
     parser.add_argument('--period-length', type=float, default=1, help="How many years")
     args = parser.parse_args()
 
-    try:
-        folders = glob.glob("data/*/")
+    #try:
+    folders = glob.glob("data/*/")
 
-        print(f"Remove files in data folders: {folders}")
+    print(f"Remove files in data folders: {folders}")
 
-        yes = {'yes','y', 'ye', ''}
-        choice = input().lower()
+    yes = {'yes','y', 'ye', ''}
+    choice = input().lower()
 
-        if choice in yes:
-            for folder in folders:
-                for file in glob.glob(f"{folder}*.p"):
-                    os.remove(file)
-        else:
-            print(f"Previous data from folders: {folders} was not removed")
+    if choice in yes:
+        for folder in folders:
+            for file in glob.glob(f"{folder}*.p"):
+                os.remove(file)
+    else:
+        print(f"Previous data from folders: {folders} was not removed")
 
-        run(args.period_length, args.step_size, args.sample_count)
-        print('Process completed')
-    except Exception as e:
-        print("Failed to generate data")
-        print(f"Error: {e}")
+    run(args.period_length, args.step_size, args.sample_count)
+    print('Process completed')
+    # except Exception as e:
+    #     print("Failed to generate data")
+    #     print(f"Error: {e}")
