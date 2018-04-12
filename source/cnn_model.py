@@ -12,7 +12,7 @@ Xtrain, ytrain, Xval, yval, Xtest, ytest, n_classes = load_data()
 
 # Hyper Parameters
 EPOCH = 40
-BATCH_SIZE = 10
+BATCH_SIZE = 100
 LR = 0.001
 
 n_classes = n_classes
