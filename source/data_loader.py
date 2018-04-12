@@ -29,17 +29,29 @@ def load_data(training_path=TRAIN, validation_path=VALIDATION, test_path=TEST):
     n_classes = len(label_map.keys())
 
     files = glob.glob(training_path)
-    Xtrain = np.array([pickle.load(open(file, "rb" )) for file in files])
+    data = []
+    for file in files:
+        with open(file, "rb" ) as f:
+            data.append(pickle.load(f))
+    Xtrain = np.array(data)
     ytrain = np.array([label_map[get_label_string(file)] for file in files])
     assert Xtrain.shape[0] == ytrain.shape[0], "Observation count does not match label count in training set"
 
     files = glob.glob(validation_path)
-    Xval = np.array([pickle.load(open(file, "rb" )) for file in files])
+    data = []
+    for file in files:
+        with open(file, "rb" ) as f:
+            data.append(pickle.load(f))
+    Xval = np.array(data)
     yval = np.array([label_map[get_label_string(file)] for file in files])
     assert Xval.shape[0] == yval.shape[0], "Observation count does not match label count in validation set"
 
     files = glob.glob(test_path)
-    Xtest = np.array([pickle.load(open(file, "rb" )) for file in files])
+    data = []
+    for file in files:
+        with open(file, "rb" ) as f:
+            data.append(pickle.load(f))
+    Xtest = np.array(data)
     ytest = np.array([label_map[get_label_string(file)] for file in files])
     assert Xtest.shape[0] == ytest.shape[0], "Observation count does not match label count in test set"
 
