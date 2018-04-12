@@ -30,7 +30,9 @@ def generate_sample(kappa, theta, xi, rho, dt, T):
 
 def store_sample(returns, variances, filename):
     data = np.stack((returns, variances))
-    pickle.dump(data, open(f"data/{filename}.p", "wb"))
+    with open(f"data/{filename}.p", "wb") as f:
+        pickle.dump(data, f)
+
 
 def generate_data(parameters, number_of_samples=10, dt=0, T=0):
     for _, kappa in enumerate(parameters['kappa']):
