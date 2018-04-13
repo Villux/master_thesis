@@ -1,7 +1,6 @@
 import pickle
 import glob
 import os
-import h5py
 import numpy as np
 from multiprocessing import Pool
 
@@ -20,27 +19,6 @@ class SimulationEnginer(object):
         filename = f"k{self.kappa}_t{self.theta}_xi{self.xi}_rho{self.rho}__{idx}"
 
         return r, v, filename
-
-
-class FileWriter(object):
-    def __init__(self, dataset_name, chunk):
-        path = f"data/{dataset_name}.h5"
-        self.file = h5py.File(path, 'w')
-
-        N, H, W = chunk.shape
-        self.row_count = 0
-        max_shape = (None, H, W) + N
-        self.dset = self.file.create_dataset('data', shape=(0, H, W), maxshape=max_shape,
-                                chunks=chunk.shape, dtype=chunk.dtype)
-
-    def write_chunk(self, chunk):
-        self.dset.resize(chunk.shape[0], axis=0)
-        self.dset[self.row_count:] = chunk
-        self.row_count += chunk.shape[0]
-
-    def close_file(self):
-        self.file.close()
-
 
 def generate_sample(kappa, theta, xi, rho, dt, T):
     parameters = {
