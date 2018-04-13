@@ -2,19 +2,17 @@ import argparse
 import glob
 import os
 
-from data_generator import generate_data, split_data
+from data_generator import DataGenerator
 from data_loader import load_data
 
 def run(T, dt, M):
-    parameters = {
-        'kappa': [0.2, 2, 6],
-        'theta': [0.1**2, 0.3**2, 0.5**2],
-        'rho': [-0.1, -0.5, -0.9],
-        'xi': [0.1, 0.3, 0.6]
-    }
+    kappas = [0.2, 2, 6]
+    thetas = [0.1**2, 0.3**2, 0.5**2]
+    xis = [0.1, 0.3, 0.6]
+    rhos = [-0.1, -0.5, -0.9]
 
-    generate_data(parameters, number_of_samples=M, dt=dt, T=T)
-    split_data(0.5, 0.25, 0.25)
+    dg = DataGenerator(kappas, thetas, xis, rhos, dt, T, M)
+    dg.generate_data()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -23,6 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('--period-length', type=float, default=1, help="How many years")
     args = parser.parse_args()
 
+    print(args)
     #try:
     folders = glob.glob("data/*/")
 
@@ -33,7 +32,7 @@ if __name__ == "__main__":
 
     if choice in yes:
         for folder in folders:
-            for file in glob.glob(f"{folder}*.p"):
+            for file in glob.glob(f"{folder}*.h5"):
                 os.remove(file)
     else:
         print(f"Previous data from folders: {folders} was not removed")
