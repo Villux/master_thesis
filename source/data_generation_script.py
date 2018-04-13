@@ -23,17 +23,15 @@ if __name__ == "__main__":
 
     print(args)
     #try:
-    folders = glob.glob("data/*/")
-
-    print(f"Remove files in data folders: {folders}")
+    files = glob.glob(f"data/*.h5"
+    print(f"Remove files in data folder: {files}")
 
     yes = {'yes','y', 'ye', ''}
     choice = input().lower()
 
     if choice in yes:
-        for folder in folders:
-            for file in glob.glob(f"{folder}*.h5"):
-                os.remove(file)
+        for file in files:
+            os.remove(file)
     else:
         print(f"Previous data from folders: {folders} was not removed")
 
