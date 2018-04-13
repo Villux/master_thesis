@@ -51,12 +51,6 @@ def generate_sample(kappa, theta, xi, rho, dt, T):
     }
     return heston_dynamic_milstein_scheme(parameters=parameters, T=T, dt=dt)
 
-def store_sample(returns, variances, filename):
-    data = np.stack((returns, variances))
-    with open(f"data/{filename}.p", "wb") as f:
-        pickle.dump(data, f)
-
-
 def generate_data(parameters, number_of_samples=10, dt=0, T=0):
     pool = Pool(os.cpu_count())
 
