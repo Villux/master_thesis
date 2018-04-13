@@ -1,6 +1,7 @@
 import pickle
 import glob
 import os
+import h5py
 import numpy as np
 from multiprocessing import Pool
 
@@ -17,7 +18,29 @@ class SimulationEnginer(object):
     def __call__(self, idx):
         r, v, _ = generate_sample(self.kappa, self.theta, self.xi, self.rho, self.dt, self.T)
         filename = f"k{self.kappa}_t{self.theta}_xi{self.xi}_rho{self.rho}__{idx}"
-        store_sample(r, v, filename)
+
+        return r, v, filename
+
+
+class FileWriter(object):
+    def __init__(self, dataset_name, chunk):
+        path = f"data/{dataset_name}.h5"
+        self.file = h5py.File(path, 'w')
+
+        N, H, W = chunk.shape
+        self.row_count = 0
+        max_shape = (None, H, W) + N
+        self.dset = self.file.create_dataset('data', shape=(0, H, W), maxshape=max_shape,
+                                chunks=chunk.shape, dtype=chunk.dtype)
+
+    def write_chunk(self, chunk):
+        self.dset.resize(chunk.shape[0], axis=0)
+        self.dset[self.row_count:] = chunk
+        self.row_count += chunk.shape[0]
+
+    def close_file(self):
+        self.file.close()
+
 
 def generate_sample(kappa, theta, xi, rho, dt, T):
     parameters = {
@@ -36,12 +59,13 @@ def store_sample(returns, variances, filename):
 
 def generate_data(parameters, number_of_samples=10, dt=0, T=0):
     pool = Pool(os.cpu_count())
+
     for _, kappa in enumerate(parameters['kappa']):
         for _, theta in enumerate(parameters['theta']):
             for _, rho in enumerate(parameters['rho']):
                 for _, xi in enumerate(parameters['xi']):
                     engine = SimulationEnginer(kappa, theta, xi, rho, dt, T)
-                    pool.map(engine, range(number_of_samples))
+                    data = pool.map(engine, range(number_of_samples))
     pool.close()
 
 def move_file_to_folder(old_path, new_path):
