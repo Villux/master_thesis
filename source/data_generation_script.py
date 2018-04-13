@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     print(args)
     #try:
-    files = glob.glob(f"data/*.h5"
+    files = glob.glob(f"data/*.h5")
     print(f"Remove files in data folder: {files}")
 
     yes = {'yes','y', 'ye', ''}
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         for file in files:
             os.remove(file)
     else:
-        print(f"Previous data from folders: {folders} was not removed")
+        print(f"Previous data: {files} was not removed")
 
     run(args.period_length, args.step_size, args.sample_count)
     print('Process completed')
