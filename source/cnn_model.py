@@ -6,22 +6,20 @@ from torch.autograd import Variable
 import torch.utils.data as Data
 
 from data_loader import load_data
-
-# Load data
-Xtrain, ytrain, Xval, yval, Xtest, ytest, n_classes = load_data()
+from file_reader import H5pyDataset
 
 # Hyper Parameters
-EPOCH = 40
+EPOCH = 2
 BATCH_SIZE = 100
 LR = 0.001
 
-n_classes = n_classes
+n_classes = 81
 n_channels = 2
 
-train_dataset = torch.utils.data.TensorDataset(torch.from_numpy(Xtrain).double(), torch.from_numpy(ytrain).double())
+train_dataset = H5pyDataset("training", BATCH_SIZE)
 train_loader = Data.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-val_dataset = torch.utils.data.TensorDataset(torch.from_numpy(Xval), torch.from_numpy(yval))
+val_dataset = H5pyDataset("validation", BATCH_SIZE)
 val_loader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 class CNN(nn.Module):
@@ -52,9 +50,9 @@ optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
 
 # Train the Model
 for epoch in range(EPOCH):
-    for i, (x, y) in enumerate(train_loader):
-        tseries = Variable(x).float()
-        labels = Variable(y).type(torch.LongTensor)
+    for i, data in enumerate(train_loader):
+        tseries = Variable(data['data']).float()
+        labels = Variable(data['label']).type(torch.LongTensor)
 
         # Forward + Backward + Optimize
         optimizer.zero_grad()
@@ -65,15 +63,15 @@ for epoch in range(EPOCH):
 
         if (i+1) % 5 == 0:
             print ('Epoch [%d/%d], Iter [%d/%d] Loss: %.4f'
-                   %(epoch+1, EPOCH, i+1, len(Xtrain)//BATCH_SIZE, loss.data[0]))
+                   %(epoch+1, EPOCH, i+1, len(train_dataset)//BATCH_SIZE, loss.data[0]))
 
 # Test the Model
 cnn.eval()  # Change model to 'eval' mode (BN uses moving mean/var).
 correct = 0
 total = 0
-for x, y in val_loader:
-    tseries = Variable(x).float()
-    labels = Variable(y).type(torch.LongTensor)
+for i, data in enumerate(val_loader):
+    tseries = Variable(data['data']).float()
+    labels = Variable(data['label']).type(torch.LongTensor)
     outputs = cnn(tseries)
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
