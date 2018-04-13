@@ -16,6 +16,9 @@ class LabelMapper(object):
     def get_label(self, kappa, theta, xi, rho):
         return self.label_map[get_label_string(kappa, theta, xi, rho)]
 
+    def get_label_count(self):
+        return len(self.label_map.keys())
+
 if __name__ == "__main__":
     # Test
     kappas = [1,2,3]
