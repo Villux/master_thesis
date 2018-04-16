@@ -1,5 +1,5 @@
 import h5py
-from file_writer import FileWriter
+from utils.file_writer import FileWriter
 
 class FileWriterH5py(FileWriter):
     def __init__(self, dataset_name, H, W):
