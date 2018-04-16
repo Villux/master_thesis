@@ -4,7 +4,7 @@ import os
 
 from data_generator import DataGenerator
 from data_loader import load_data
-from utils.data_writer import DataWriter
+from utils.data_writer_orchestrator import DataWriterOrchestrator
 from utils.file_writer_h5py import FileWriterH5py
 
 def create_h5_datawriter(H, W):
@@ -12,7 +12,7 @@ def create_h5_datawriter(H, W):
     fw_validation = FileWriterH5py("validation", H, W)
     fw_test = FileWriterH5py("test", H, W)
 
-    return DataWriter(fw_training, fw_validation, fw_test)
+    return DataWriterOrchestrator([fw_training, fw_validation, fw_test])
 
 def run(T, dt, M):
     kappas = [0.2, 2, 6]
