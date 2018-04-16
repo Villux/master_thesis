@@ -25,8 +25,8 @@ class FileWriterLocal(FileWriter):
             self.dset_label = np.concatenate((self.dset_label, labels))
 
     def close_file(self):
-        self.dset = None
-        self.dset_label = None
+        # Do not do anything
+        pass
 
 
 if __name__ == "__main__":
