@@ -1,4 +1,4 @@
-from data_writer import DataWriter
+from utils.data_writer import DataWriter
 
 class DataWriterOrchestrator(DataWriter):
     def __init__(self, sources):
