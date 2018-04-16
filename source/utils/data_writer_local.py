@@ -1,5 +1,5 @@
 import numpy as np
-from data_writer import DataWriter
+from utils.data_writer import DataWriter
 
 class DataWriterLocal(DataWriter):
     def __init__(self, dataset_name):
