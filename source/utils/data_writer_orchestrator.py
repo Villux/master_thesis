@@ -1,13 +1,21 @@
-class DataWriterOrchestrator(object):
+from data_writer import DataWriter
+
+class DataWriterOrchestrator(DataWriter):
     def __init__(self, sources):
         self.sources = sources
 
-    def write_chunks(self, chunks, labels):
+    def __len__(self):
+        return len(self.sources)
+
+    def __str__(self):
+        return f"DataWriterOrchestrator for sources: {self.sources}"
+
+    def write_chunk(self, chunks, labels):
         assert len(chunks) == len(labels) == len(self.sources)
         for idx, source in enumerate(self.sources):
             source.write_chunk(chunks[idx], labels[idx])
 
-    def close_all(self):
+    def close(self):
         for _, source in enumerate(self.sources):
             source.close()
 
@@ -37,7 +45,7 @@ if __name__ == "__main__":
     test_chunk = np.array([data * i for i in test_range])
     test_label = np.array([np.array([i]) for i in test_range])
 
-    dw.write_chunks(np.array([training_chunk, validation_chunk, test_chunk]), np.array([training_label, validation_label, test_label]))
+    dw.write_chunk(np.array([training_chunk, validation_chunk, test_chunk]), np.array([training_label, validation_label, test_label]))
 
     assert int(dw.sources[0].dset[9][0][0]) == 9
     assert int(dw.sources[0].dset[9][0][2]) == 45
