@@ -4,6 +4,15 @@ import os
 
 from data_generator import DataGenerator
 from data_loader import load_data
+from utils.data_writer import DataWriter
+from utils.file_writer_h5py import FileWriterH5py
+
+def create_h5_datawriter(H, W):
+    fw_training = FileWriterH5py("training", H, W)
+    fw_validation = FileWriterH5py("validation", H, W)
+    fw_test = FileWriterH5py("test", H, W)
+
+    return DataWriter(fw_training, fw_validation, fw_test)
 
 def run(T, dt, M):
     kappas = [0.2, 2, 6]
@@ -11,8 +20,10 @@ def run(T, dt, M):
     xis = [0.1, 0.3, 0.6]
     rhos = [-0.1, -0.5, -0.9]
 
+    data_writer = create_h5_datawriter(2, int(T/dt))
+
     dg = DataGenerator(kappas, thetas, xis, rhos, dt, T, M)
-    dg.generate_data()
+    dg.generate_data(data_writer)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
