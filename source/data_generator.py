@@ -6,7 +6,6 @@ from multiprocessing import Pool
 
 from heston import heston_dynamic_milstein_scheme
 from label_mapper import LabelMapper
-from file_write import FileWriter
 
 def generate_parameter_tuples(kappas, thetas, xis, rhos):
     return tuple([(kappa, theta, xi, rho) for kappa in kappas
@@ -25,11 +24,8 @@ class DataGenerator(object):
         self.chunk_size = chunk_size
         self.param_tuples = generate_parameter_tuples(kappas, thetas, xis, rhos)
 
-    def generate_data(self):
+    def generate_data(self, data_writer):
         pool = Pool(os.cpu_count())
-        fw_training = FileWriter("training", 2, self.time_series_length)
-        fw_validation = FileWriter("validation", 2, self.time_series_length)
-        fw_test = FileWriter("test", 2, self.time_series_length)
 
         for _ in range(int(self.N/self.chunk_size)):
             data_tuple = pool.map(self.generate_sample, self.param_tuples * self.chunk_size)
@@ -48,13 +44,11 @@ class DataGenerator(object):
             training_size = int(len(y) * 0.5)
             validation_size = int(len(y) * 0.25)
 
-            fw_training.write_chunk(X[:training_size], y[:training_size])
-            fw_validation.write_chunk(X[training_size:training_size + validation_size], y[training_size:training_size + validation_size])
-            fw_test.write_chunk(X[training_size+validation_size:], y[training_size+validation_size:])
+            data_writer.write_chunk_training(X[:training_size], y[:training_size])
+            data_writer.write_chunk_validation(X[training_size:training_size + validation_size], y[training_size:training_size + validation_size])
+            data_writer.write_chunk_test(X[training_size+validation_size:], y[training_size+validation_size:])
 
-        fw_training.close_file()
-        fw_validation.close_file()
-        fw_test.close_file()
+        data_writer.close_writers()
 
     def generate_sample(self, *args):
         kappa, theta, xi, rho = args[0]
@@ -72,14 +66,39 @@ if __name__ == "__main__":
     # Test
     import os
     import numpy as np
+    from utils.file_writer_local import FileWriterLocal
+    from utils.data_writer import DataWriter
 
-    kappa = [0.2, 2, 6]
-    theta = [0.1**2, 0.3**2, 0.5**2]
-    rho = [-0.1, -0.5, -0.9]
-    xi = [0.1, 0.3, 0.6]
+    kappa = [0.2, 2]
+    theta = [0.1**2]
+    xi = [0.1]
+    rho = [-0.1]
 
     dt = 1/2
     T = 1
 
-    dg = DataGenerator(kappa, theta, xi, rho, dt, T, 100, chunk_size=8)
-    dg.generate_data()
+    param_combos = len(kappa) * len(theta) * len(rho) * len(xi)
+    chunk_siz = 4
+    M = 8
+
+    dg = DataGenerator(kappa, theta, xi, rho, dt, T, M, chunk_size=chunk_siz)
+
+    fw_train = FileWriterLocal("train")
+    fw_val = FileWriterLocal("val")
+    fw_test = FileWriterLocal("test")
+    dw = DataWriter(fw_train, fw_val, fw_test)
+    dw.close_writers = lambda : None
+
+    dg.generate_data(dw)
+
+    assert dg.param_tuples == ((0.2, 0.1**2, 0.1, -0.1), (2, 0.1**2, 0.1, -0.1))
+
+    total_number_of_observations = param_combos * M
+    assert dw.training.dset.shape[0] == total_number_of_observations * 0.5
+    assert dw.training.dset_label.shape[0] == total_number_of_observations * 0.5
+    assert dw.validation.dset.shape[0] == total_number_of_observations * 0.25
+    assert dw.validation.dset_label.shape[0] == total_number_of_observations * 0.25
+    assert dw.test.dset.shape[0] == total_number_of_observations * 0.25
+    assert dw.test.dset_label.shape[0] == total_number_of_observations * 0.25
+
+
