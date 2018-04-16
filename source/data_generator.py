@@ -87,7 +87,6 @@ if __name__ == "__main__":
     fw_val = FileWriterLocal("val")
     fw_test = FileWriterLocal("test")
     dw = DataWriter(fw_train, fw_val, fw_test)
-    dw.close_writers = lambda : None
 
     dg.generate_data(dw)
 
