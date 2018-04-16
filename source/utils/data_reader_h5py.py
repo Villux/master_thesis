@@ -1,7 +1,7 @@
 import h5py
-from utils.file_reader import FileReader
+from utils.data_reader import DataReader
 
-class FileReaderH5py(FileReader):
+class DataReaderH5py(DataReader):
     def __init__(self, dataset_name):
         self.path = f"data/{dataset_name}.h5"
         self.file = h5py.File(self.path, 'r')
