@@ -9,6 +9,9 @@ class DataReaderH5py(DataReader):
         self.dset = self.file['data']
         self.dset_label = self.file['label']
 
+    def __len__(self):
+        return len(self.dset)
+
     def get_sample(self, idx):
         return self.dset[idx], self.dset_label[idx]
 
