@@ -85,7 +85,7 @@ if __name__ == "__main__":
     from utils.data_writer_orchestrator import DataWriterOrchestrator
 
     kappa = [0.2, 2]
-    theta = [0.1**2]
+    theta = [0.01]
     xi = [0.1]
     rho = [-0.1]
 
@@ -105,10 +105,9 @@ if __name__ == "__main__":
 
     dg.generate_data(dw, split=[0.5, 0.25, 0.25])
 
-    assert dg.param_tuples == ((0.2, 0.1**2, 0.1, -0.1), (2, 0.1**2, 0.1, -0.1))
+    assert dg.param_tuples == ((0.2, 0.01, 0.1, -0.1), (2, 0.01, 0.1, -0.1))
 
     total_number_of_observations = param_combos * M
-    import ipdb; ipdb.set_trace()
     assert dw.sources[0].dset.shape[0] == total_number_of_observations * 0.5
     assert dw.sources[0].dset_label.shape[0] == total_number_of_observations * 0.5
     assert dw.sources[1].dset.shape[0] == total_number_of_observations * 0.25
