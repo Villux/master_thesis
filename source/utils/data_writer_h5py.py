@@ -1,7 +1,7 @@
 import h5py
-from utils.file_writer import FileWriter
+from utils.data_writer import DataWriter
 
-class FileWriterH5py(FileWriter):
+class DataWriterH5py(DataWriter):
     def __init__(self, dataset_name, H, W):
         self.path = f"data/{dataset_name}.h5"
         self.file = h5py.File(self.path, 'w')
@@ -13,7 +13,7 @@ class FileWriterH5py(FileWriter):
         return  self.dset.shape[0]
 
     def __str__(self):
-        return f"FileWriterH5py for path: {self.path}"
+        return f"DataWriterH5py for path: {self.path}"
 
     def write_chunk(self, chunk, labels):
         self.dset.resize(self.row_count + chunk.shape[0], axis=0)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     import numpy as np
 
     data = [[1,3, 5], [2,4, 6]]
-    fw = FileWriterH5py("test_db", 2, 3)
+    fw = DataWriterH5py("test_db", 2, 3)
 
     for i in range(10):
         fw.write_chunk(np.array([data]) * i, [i])

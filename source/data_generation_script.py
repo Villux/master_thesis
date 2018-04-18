@@ -5,18 +5,18 @@ import os
 from data_generator import DataGenerator
 from data_loader import load_data
 from utils.data_writer_orchestrator import DataWriterOrchestrator
-from utils.file_writer_h5py import FileWriterH5py
+from utils.data_writer_h5py import DataWriterH5py
 
 def create_h5_datawriter(H, W):
-    fw_training = FileWriterH5py("training", H, W)
-    fw_validation = FileWriterH5py("validation", H, W)
-    fw_test = FileWriterH5py("test", H, W)
+    fw_training = DataWriterH5py("training", H, W)
+    fw_validation = DataWriterH5py("validation", H, W)
+    fw_test = DataWriterH5py("test", H, W)
 
     return DataWriterOrchestrator([fw_training, fw_validation, fw_test])
 
 def run(T, dt, M):
     kappas = [0.2, 2, 6]
-    thetas = [0.1**2, 0.3**2, 0.5**2]
+    thetas = [0.01, 0.09, 0.25]
     xis = [0.1, 0.3, 0.6]
     rhos = [-0.1, -0.5, -0.9]
 
