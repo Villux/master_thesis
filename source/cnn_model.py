@@ -6,8 +6,7 @@ from torch.autograd import Variable
 import torch.utils.data as Data
 
 from data_loader import load_data
-from file_reader import H5pyDataset
-
+from utils.helpers import create_h5py_dataset_with_cache
 # Hyper Parameters
 EPOCH = 2
 BATCH_SIZE = 100
@@ -16,10 +15,10 @@ LR = 0.001
 n_classes = 81
 n_channels = 2
 
-train_dataset = H5pyDataset("training", BATCH_SIZE)
+train_dataset = create_h5py_dataset_with_cache("training", BATCH_SIZE)
 train_loader = Data.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-val_dataset = H5pyDataset("validation", BATCH_SIZE)
+val_dataset = create_h5py_dataset_with_cache("validation", BATCH_SIZE)
 val_loader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 class CNN(nn.Module):
