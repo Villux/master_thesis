@@ -8,11 +8,11 @@ import torch.utils.data as Data
 from data_loader import load_data
 from utils.helpers import create_h5py_dataset_with_cache
 # Hyper Parameters
-EPOCH = 2
+EPOCH = 5
 BATCH_SIZE = 100
 LR = 0.001
 
-n_classes = 81
+n_classes = 3
 n_channels = 2
 
 train_dataset = create_h5py_dataset_with_cache("training", BATCH_SIZE)
@@ -21,18 +21,21 @@ train_loader = Data.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shu
 val_dataset = create_h5py_dataset_with_cache("validation", BATCH_SIZE)
 val_loader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
+test_dataset = create_h5py_dataset_with_cache("test", BATCH_SIZE)
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
             nn.Conv1d(2, 8, kernel_size=5, stride=1),
             nn.ReLU(),
-            nn.AvgPool1d(kernel_size=2))
+            nn.AvgPool1d(2))
         self.layer2 = nn.Sequential(
-            nn.Conv1d(8, 5, kernel_size=5, stride=1),
+            nn.Conv1d(8, 4, kernel_size=5, stride=1),
             nn.ReLU(),
-            nn.AvgPool1d(kernel_size=2))
-        self.fc = nn.Linear(60*5, n_classes)
+            nn.AvgPool1d(2))
+        self.fc = nn.Linear(60 * 4, n_classes)
 
     def forward(self, x):
         out = self.layer1(x)
@@ -52,7 +55,6 @@ for epoch in range(EPOCH):
     for i, data in enumerate(train_loader):
         tseries = Variable(data['data']).float()
         labels = Variable(data['label']).type(torch.LongTensor)
-
         # Forward + Backward + Optimize
         optimizer.zero_grad()
         outputs = cnn(tseries)
@@ -77,3 +79,15 @@ for i, data in enumerate(val_loader):
     correct += (predicted == labels.data).sum()
 
 print('Validation Accuracy of the model: %d %%' % (100 * correct / total))
+
+correct = 0
+total = 0
+for i, data in enumerate(test_loader):
+    tseries = Variable(data['data']).float()
+    labels = Variable(data['label']).type(torch.LongTensor)
+    outputs = cnn(tseries)
+    _, predicted = torch.max(outputs.data, 1)
+    total += labels.size(0)
+    correct += (predicted == labels.data).sum()
+
+print('Test Accuracy of the model: %d %%' % (100 * correct / total))
