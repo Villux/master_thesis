@@ -3,15 +3,14 @@ def get_label_string(kappa, theta, xi, rho):
     return f"k{kappa}_t{theta}_xi{xi}_rho{rho}"
 
 class LabelMapper(object):
-    def __init__(self, kappa, theta, xi, rho):
+    def __init__(self):
         self.label_map = {}
-        label_idx = 0
-        for k in kappa:
-            for t in theta:
-                for x in xi:
-                    for r in rho:
-                        self.label_map[get_label_string(k, t, x, r)] = label_idx
-                        label_idx += 1
+        self.label_idx = 0
+
+    def add_lable(self, kappa, theta, xi, rho):
+        self.label_map[get_label_string(kappa, theta, xi, rho)] = self.label_idx
+        self.label_idx += 1
+        return self.label_idx - 1
 
     def get_label(self, kappa, theta, xi, rho):
         return self.label_map[get_label_string(kappa, theta, xi, rho)]
@@ -26,7 +25,12 @@ if __name__ == "__main__":
     xis = [7,8,9]
     rhos = [0.1, 0.2, 0.3]
 
-    lm = LabelMapper(kappas, thetas, xis, rhos)
+    lm = LabelMapper()
+    for k in kappas:
+        for t in thetas:
+            for x in xis:
+                for r in rhos:
+                    lm.add_lable(k, t, x, r)
 
     assert lm.get_label(1,4,7,0.1) == 0
     assert lm.get_label(1,4,7,0.1) != 1

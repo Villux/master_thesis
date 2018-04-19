@@ -6,6 +6,13 @@ from data_generator import DataGenerator
 from data_loader import load_data
 from utils.data_writer_orchestrator import DataWriterOrchestrator
 from utils.data_writer_h5py import DataWriterH5py
+from label_mapper import LabelMapper
+
+def generate_parameter_tuples(kappas, thetas, xis, rhos):
+    return tuple([(kappa, theta, xi, rho) for kappa in kappas
+            for theta in thetas
+                for xi in xis
+                    for rho in rhos])
 
 def create_h5_datawriter(H, W):
     fw_training = DataWriterH5py("training", H, W)
@@ -15,15 +22,15 @@ def create_h5_datawriter(H, W):
     return DataWriterOrchestrator([fw_training, fw_validation, fw_test])
 
 def run(T, dt, M):
-    kappas = [0.2, 2, 6]
-    thetas = [0.01, 0.09, 0.25]
-    xis = [0.1, 0.3, 0.6]
-    rhos = [-0.1, -0.5, -0.9]
-
     data_writer = create_h5_datawriter(2, int(T/dt))
+    label_mapper = LabelMapper()
+    parameter_combos = ((6, 0.25, 0.6, -0.9), (2, 0.09, 0.3, -0.5), (0.2, 0.01, 0.1, -0.1),)
+    #parameter_combos = ((6, 0.01, 0.1, -0.1), (2, 0.01, 0.1, -0.1), (0.2, 0.01, 0.1, -0.1),)
+    for k, t, x, r in parameter_combos:
+        label_mapper.add_lable(k, t, x, r)
 
-    dg = DataGenerator(kappas, thetas, xis, rhos, dt, T, M)
-    dg.generate_data(data_writer)
+    dg = DataGenerator(parameter_combos, label_mapper, dt, T, M)
+    dg.generate_data(data_writer, [0.5, 0.25, 0.25])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

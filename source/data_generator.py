@@ -5,24 +5,16 @@ import numpy as np
 from multiprocessing import Pool
 
 from heston import heston_dynamic_milstein_scheme
-from label_mapper import LabelMapper
-
-def generate_parameter_tuples(kappas, thetas, xis, rhos):
-    return tuple([(kappa, theta, xi, rho) for kappa in kappas
-            for theta in thetas
-                for xi in xis
-                    for rho in rhos])
-
 
 class DataGenerator(object):
-    def __init__(self, kappas, thetas, xis, rhos, dt, T, N, chunk_size=12):
+    def __init__(self, param_tuples, label_mapper, dt, T, N, chunk_size=12):
         self.dt = dt
         self.T = T
         self.time_series_length = int(T/dt)
         self.N = N
-        self.lm = LabelMapper(kappas, thetas, xis, rhos)
+        self.lm = label_mapper
         self.chunk_size = chunk_size
-        self.param_tuples = generate_parameter_tuples(kappas, thetas, xis, rhos)
+        self.param_tuples = param_tuples
 
     def generate_data(self, data_writer, split=None):
         pool = Pool(os.cpu_count())
@@ -41,7 +33,7 @@ class DataGenerator(object):
             X = X[perm]
             y = y[perm]
 
-            if len(split) > 1:
+            if split != None and len(split) > 1:
                 self.write_in_splits(X, y, split, data_writer)
             else:
                 data_writer.write_chunk(X, y)
