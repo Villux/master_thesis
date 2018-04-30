@@ -15,6 +15,7 @@ LR = 0.001
 n_classes = 3
 n_channels = 2
 
+VARIANCE_ID = 1
 train_dataset = create_h5py_dataset_with_cache("training", BATCH_SIZE)
 train_loader = Data.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
@@ -28,14 +29,14 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv1d(2, 8, kernel_size=5, stride=1),
+            nn.Conv1d(n_channels, 18, kernel_size=10, stride=1),
             nn.ReLU(),
             nn.AvgPool1d(2))
         self.layer2 = nn.Sequential(
             nn.Conv1d(8, 4, kernel_size=5, stride=1),
             nn.ReLU(),
             nn.AvgPool1d(2))
-        self.fc = nn.Linear(60 * 4, n_classes)
+        self.fc = nn.Linear(58 * 4, n_classes)
 
     def forward(self, x):
         out = self.layer1(x)
