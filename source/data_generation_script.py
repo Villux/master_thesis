@@ -24,8 +24,13 @@ def create_h5_datawriter(H, W):
 def run(T, dt, M):
     data_writer = create_h5_datawriter(2, int(T/dt))
     label_mapper = LabelMapper()
-    # parameter_combos = ((6, 0.25, 0.6, -0.9), (2, 0.09, 0.3, -0.5), (0.2, 0.01, 0.1, -0.1),)
 
+    kappas = [0.2, 2, 6]
+    thetas = [0.1**2, 0.3**2, 0.5**2]
+    xis = [0.1, 0.3, 0.6]
+    rhos = [-0.1, -0.5, -0.9]
+
+    parameter_combos = generate_parameter_tuples(kappas, thetas, xis, rhos)
     # Different kappa
     # parameter_combos = ((6, 0.09, 0.3, -0.1), (2, 0.09, 0.3, -0.1), (0.2, 0.09, 0.3, -0.1),)
     # Different theta
@@ -33,7 +38,7 @@ def run(T, dt, M):
     # # Different xi
     # parameter_combos = ((2, 0.09, 0.1, -0.5), (2, 0.09, 0.3, -0.5), (2, 0.09, 0.6, -0.5),)
     # # Different rho
-    parameter_combos = ((2, 0.09, 0.3, -0.1), (2, 0.09, 0.3, -0.5), (2, 0.09, 0.3, -0.9),)
+    # parameter_combos = ((2, 0.09, 0.3, -0.1), (2, 0.09, 0.3, -0.5), (2, 0.09, 0.3, -0.9),)
     for k, t, x, r in parameter_combos:
         label_mapper.add_lable(k, t, x, r)
 
