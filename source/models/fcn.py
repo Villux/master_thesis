@@ -16,8 +16,8 @@ class FCN(nn.Module):
             nn.ReLU())
         # In: 245 out 244
         self.layer3 = nn.Sequential(
-            nn.Conv1d(256, 3, kernel_size=3, stride=1),
-            nn.BatchNorm1d(3),
+            nn.Conv1d(256, 81, kernel_size=3, stride=1),
+            nn.BatchNorm1d(81),
             nn.ReLU())
 
         self.GPL = nn.AvgPool1d(122)
@@ -28,5 +28,5 @@ class FCN(nn.Module):
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.GPL(out)
-        out = out.view(-1, 3)
+        out = out.view(-1, 81)
         return self.sofmax(out)
