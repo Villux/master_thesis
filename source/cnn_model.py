@@ -12,6 +12,7 @@ from models.fcn import FCN
 EPOCH = 5
 BATCH_SIZE = 100
 LR = 0.001
+USE_CUDA = torch.cuda.is_available()
 
 n_classes = 3
 n_channels = 2
@@ -28,6 +29,8 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=BATCH
 
 
 fcn = FCN(n_channels)
+if USE_CUDA:
+    fcn = fcn.cuda()
 # Loss and Optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(fcn.parameters(), lr=LR)
@@ -37,6 +40,9 @@ for epoch in range(EPOCH):
     for i, data in enumerate(train_loader):
         tseries = Variable(data['data']).float()
         labels = Variable(data['label']).type(torch.LongTensor)
+        if USE_CUDA:
+            tseries = tseries.cuda()
+            labels = labels.cuda()
         # Forward + Backward + Optimize
         optimizer.zero_grad()
         outputs = fcn(tseries)
@@ -55,6 +61,9 @@ total = 0
 for i, data in enumerate(val_loader):
     tseries = Variable(data['data']).float()
     labels = Variable(data['label']).type(torch.LongTensor)
+    if USE_CUDA:
+            tseries = tseries.cuda()
+            labels = labels.cuda()
     outputs = fcn(tseries)
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
@@ -67,6 +76,9 @@ total = 0
 for i, data in enumerate(test_loader):
     tseries = Variable(data['data']).float()
     labels = Variable(data['label']).type(torch.LongTensor)
+    if USE_CUDA:
+            tseries = tseries.cuda()
+            labels = labels.cuda()
     outputs = fcn(tseries)
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
