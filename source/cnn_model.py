@@ -29,8 +29,13 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=BATCH
 
 
 fcn = FCN(n_channels)
+
+print(f"MODEL TRAINABLE PARAMETERS: {sum(p.numel() for p in fcn.parameters() if p.requires_grad)}")
+
 if USE_CUDA:
+    print("CUDA USED")
     fcn = fcn.cuda()
+
 # Loss and Optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(fcn.parameters(), lr=LR)
