@@ -54,11 +54,11 @@ for epoch in range(EPOCH):
             print ('Epoch [%d/%d], Iter [%d/%d] Loss: %.4f'
                    %(epoch+1, EPOCH, i+1, len(train_dataset)//BATCH_SIZE, loss.data[0]))
 
-# Test the Model
+
 fcn.eval()  # Change model to 'eval' mode (BN uses moving mean/var).
 correct = 0
 total = 0
-for i, data in enumerate(val_loader):
+for i, data in enumerate(train_loader):
     tseries = Variable(data['data']).float()
     labels = Variable(data['label']).type(torch.LongTensor)
     if USE_CUDA:
@@ -69,7 +69,7 @@ for i, data in enumerate(val_loader):
     total += labels.size(0)
     correct += (predicted == labels.data).sum()
 
-print('Validation Accuracy of the model: %d %%' % (100 * correct / total))
+print('Train Accuracy of the model: %d %%' % (100 * correct / total))
 
 correct = 0
 total = 0
